@@ -21,6 +21,9 @@ async function seed() {
 
   try {
     console.log("Clearing existing data...");
+    await db.delete(schema.skillPrerequisites).catch(() => {});
+    await db.delete(schema.skills).catch(() => {});
+    await db.delete(schema.skillCategories).catch(() => {});
     await db.delete(schema.projects).catch(() => {});
     await db.delete(schema.attachments).catch(() => {});
     await db.delete(schema.auditLogs).catch(() => {});
@@ -139,6 +142,114 @@ async function seed() {
       },
     ]);
     console.log("  Created 3 projects");
+
+    console.log("Creating skill categories...");
+    const [catSafety, catEquipment, catQuality, catProcess, catLeadership] =
+      await db
+        .insert(schema.skillCategories)
+        .values([
+          {
+            name: "Safety",
+            description: "Safety-related skills and certifications",
+            color: "#EF4444",
+            sortOrder: 1,
+          },
+          {
+            name: "Equipment Operation",
+            description: "Machine and equipment operation skills",
+            color: "#3B82F6",
+            sortOrder: 2,
+          },
+          {
+            name: "Quality",
+            description: "Quality control and inspection skills",
+            color: "#10B981",
+            sortOrder: 3,
+          },
+          {
+            name: "Process",
+            description: "Manufacturing process skills",
+            color: "#F59E0B",
+            sortOrder: 4,
+          },
+          {
+            name: "Leadership",
+            description: "Supervisory and leadership skills",
+            color: "#8B5CF6",
+            sortOrder: 5,
+          },
+        ])
+        .returning();
+    console.log("  Created 5 skill categories");
+
+    console.log("Creating skills...");
+    await db.insert(schema.skills).values([
+      {
+        name: "Lockout/Tagout (LOTO)",
+        code: "LOTO",
+        description:
+          "Procedures for controlling hazardous energy during equipment servicing and maintenance",
+        categoryId: catSafety.id,
+        requiresCertification: true,
+        certificationValidityMonths: 12,
+        requiredTrainingHours: 4,
+        allowOJT: true,
+        allowClassroom: true,
+        allowOnline: true,
+      },
+      {
+        name: "Forklift Operation",
+        code: "FORK",
+        description: "Safe operation of powered industrial trucks (forklifts)",
+        categoryId: catEquipment.id,
+        requiresCertification: true,
+        certificationValidityMonths: 36,
+        requiredTrainingHours: 8,
+        hasProficiencyLevels: true,
+        maxProficiencyLevel: 3,
+        allowOJT: true,
+        allowClassroom: true,
+        allowOnline: false,
+      },
+      {
+        name: "First Aid/CPR",
+        code: "FA-CPR",
+        description: "Emergency first aid and cardiopulmonary resuscitation",
+        categoryId: catSafety.id,
+        requiresCertification: true,
+        certificationValidityMonths: 24,
+        requiredTrainingHours: 8,
+        allowOJT: false,
+        allowClassroom: true,
+        allowOnline: false,
+      },
+      {
+        name: "Visual Quality Inspection",
+        code: "VQI",
+        description: "Visual inspection techniques for quality control",
+        categoryId: catQuality.id,
+        requiresCertification: false,
+        requiredTrainingHours: 4,
+        hasProficiencyLevels: true,
+        maxProficiencyLevel: 3,
+        allowOJT: true,
+        allowClassroom: true,
+        allowOnline: true,
+      },
+      {
+        name: "ESD Awareness",
+        code: "ESD",
+        description: "Electrostatic discharge prevention and handling",
+        categoryId: catProcess.id,
+        requiresCertification: true,
+        certificationValidityMonths: 12,
+        requiredTrainingHours: 2,
+        allowOJT: false,
+        allowClassroom: true,
+        allowOnline: true,
+      },
+    ]);
+    console.log("  Created 5 skills");
 
     console.log("\nSeed completed successfully!");
     console.log("\nDefault credentials:");

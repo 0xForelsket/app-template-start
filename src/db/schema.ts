@@ -24,7 +24,7 @@ export const projectStatuses = [
 export type ProjectStatus = (typeof projectStatuses)[number];
 
 // Generic entity types for attachments and audit logs
-export const entityTypes = ["user", "project"] as const;
+export const entityTypes = ["user", "project", "skill", "skill_category"] as const;
 export type EntityType = (typeof entityTypes)[number];
 
 // Attachment types
@@ -127,6 +127,91 @@ export const projects = pgTable(
     searchIdx: index("proj_search_idx").using(
       "gin",
       sql`to_tsvector('english', ${table.name} || ' ' || coalesce(${table.description}, ''))`
+    ),
+  })
+);
+
+// ============ LMS DOMAIN: SKILLS ============
+
+export const skillCategories = pgTable("skill_categories", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  displayId: serial("display_id").notNull(),
+  name: text("name").unique().notNull(),
+  description: text("description"),
+  color: text("color"), // Hex color for UI display, e.g., "#EF4444"
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const skills = pgTable(
+  "skills",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    displayId: serial("display_id").notNull(),
+    name: text("name").notNull(),
+    code: text("code").unique().notNull(), // Short code like "LOTO", "FORK-01"
+    description: text("description"),
+    categoryId: text("category_id").references(() => skillCategories.id),
+
+    // Proficiency tracking
+    hasProficiencyLevels: boolean("has_proficiency_levels")
+      .notNull()
+      .default(false),
+    maxProficiencyLevel: integer("max_proficiency_level").notNull().default(3), // 1=Basic, 2=Intermediate, 3=Expert
+
+    // Certification settings
+    requiresCertification: boolean("requires_certification")
+      .notNull()
+      .default(false),
+    certificationValidityMonths: integer("certification_validity_months"), // null = never expires
+
+    // Training settings
+    requiredTrainingHours: integer("required_training_hours"), // Hours required for certification
+    allowOJT: boolean("allow_ojt").notNull().default(true),
+    allowClassroom: boolean("allow_classroom").notNull().default(true),
+    allowOnline: boolean("allow_online").notNull().default(true),
+
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    categoryIdx: index("skill_category_idx").on(table.categoryId),
+    activeIdx: index("skill_active_idx").on(table.isActive),
+    searchIdx: index("skill_search_idx").using(
+      "gin",
+      sql`to_tsvector('english', ${table.name} || ' ' || coalesce(${table.code}, '') || ' ' || coalesce(${table.description}, ''))`
+    ),
+  })
+);
+
+export const skillPrerequisites = pgTable(
+  "skill_prerequisites",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    skillId: text("skill_id")
+      .references(() => skills.id, { onDelete: "cascade" })
+      .notNull(),
+    prerequisiteSkillId: text("prerequisite_skill_id")
+      .references(() => skills.id, { onDelete: "cascade" })
+      .notNull(),
+    minimumProficiencyLevel: integer("minimum_proficiency_level")
+      .notNull()
+      .default(1),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    skillIdx: index("prereq_skill_idx").on(table.skillId),
+    prereqSkillIdx: index("prereq_prereq_skill_idx").on(
+      table.prerequisiteSkillId
     ),
   })
 );
@@ -235,6 +320,38 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   }),
 }));
 
+export const skillCategoriesRelations = relations(
+  skillCategories,
+  ({ many }) => ({
+    skills: many(skills),
+  })
+);
+
+export const skillsRelations = relations(skills, ({ one, many }) => ({
+  category: one(skillCategories, {
+    fields: [skills.categoryId],
+    references: [skillCategories.id],
+  }),
+  prerequisites: many(skillPrerequisites, { relationName: "skillPrereqs" }),
+  prerequisiteFor: many(skillPrerequisites, { relationName: "prereqSkill" }),
+}));
+
+export const skillPrerequisitesRelations = relations(
+  skillPrerequisites,
+  ({ one }) => ({
+    skill: one(skills, {
+      fields: [skillPrerequisites.skillId],
+      references: [skills.id],
+      relationName: "skillPrereqs",
+    }),
+    prerequisiteSkill: one(skills, {
+      fields: [skillPrerequisites.prerequisiteSkillId],
+      references: [skills.id],
+      relationName: "prereqSkill",
+    }),
+  })
+);
+
 // ============ TYPE EXPORTS ============
 
 export type Role = typeof roles.$inferSelect;
@@ -257,6 +374,15 @@ export type NewSystemSetting = typeof systemSettings.$inferInsert;
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type NewAuditLog = typeof auditLogs.$inferInsert;
+
+export type SkillCategory = typeof skillCategories.$inferSelect;
+export type NewSkillCategory = typeof skillCategories.$inferInsert;
+
+export type Skill = typeof skills.$inferSelect;
+export type NewSkill = typeof skills.$inferInsert;
+
+export type SkillPrerequisite = typeof skillPrerequisites.$inferSelect;
+export type NewSkillPrerequisite = typeof skillPrerequisites.$inferInsert;
 
 export interface SmtpConfig {
   host: string;

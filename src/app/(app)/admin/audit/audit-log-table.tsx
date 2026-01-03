@@ -68,11 +68,15 @@ const actionColors: Record<string, string> = {
 const entityLabels: Record<EntityType, string> = {
   user: "User",
   project: "Project",
+  skill: "Skill",
+  skill_category: "Skill Category",
 };
 
 const entityLinks: Record<EntityType, string> = {
   user: "/admin/users",
   project: "/projects",
+  skill: "/skills",
+  skill_category: "/skills/categories",
 };
 
 export function AuditLogTable({

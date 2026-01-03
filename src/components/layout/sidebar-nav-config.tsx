@@ -1,5 +1,12 @@
 import { PERMISSIONS, type Permission } from "@/lib/permissions";
-import { FolderKanban, Home, Settings2, Shield, Users } from "lucide-react";
+import {
+  BookOpen,
+  FolderKanban,
+  Home,
+  Settings2,
+  Shield,
+  Users,
+} from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -23,6 +30,17 @@ export const navGroups: NavGroup[] = [
         href: "/dashboard",
         icon: <Home className="h-5 w-5" />,
         permission: PERMISSIONS.PROJECT_VIEW,
+      },
+    ],
+  },
+  {
+    label: "Training",
+    items: [
+      {
+        label: "Skill Catalog",
+        href: "/skills",
+        icon: <BookOpen className="h-5 w-5" />,
+        permission: PERMISSIONS.SKILL_VIEW,
       },
     ],
   },

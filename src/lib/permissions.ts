@@ -19,6 +19,16 @@ export const PERMISSIONS = {
   // System administration
   SYSTEM_SETTINGS: "system:settings",
 
+  // Skills
+  SKILL_VIEW: "skill:view",
+  SKILL_CREATE: "skill:create",
+  SKILL_UPDATE: "skill:update",
+  SKILL_DELETE: "skill:delete",
+
+  // Skill Categories
+  SKILL_CATEGORY_VIEW: "skill_category:view",
+  SKILL_CATEGORY_MANAGE: "skill_category:manage",
+
   // Superadmin - grants all permissions
   ALL: "*",
 } as const;
@@ -26,13 +36,19 @@ export const PERMISSIONS = {
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
-  employee: [PERMISSIONS.PROJECT_VIEW],
+  employee: [
+    PERMISSIONS.PROJECT_VIEW,
+    PERMISSIONS.SKILL_VIEW,
+    PERMISSIONS.SKILL_CATEGORY_VIEW,
+  ],
 
   supervisor: [
     PERMISSIONS.PROJECT_VIEW,
     PERMISSIONS.PROJECT_CREATE,
     PERMISSIONS.PROJECT_UPDATE,
     PERMISSIONS.USER_VIEW,
+    PERMISSIONS.SKILL_VIEW,
+    PERMISSIONS.SKILL_CATEGORY_VIEW,
   ],
 
   admin: [PERMISSIONS.ALL],
