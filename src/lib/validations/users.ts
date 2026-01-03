@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const userRoleSchema = z.enum(["employee", "supervisor", "admin"]);
+export const userRoleSchema = z.enum(["operator", "employee", "supervisor", "admin"]);
 
 // PIN must be 6-20 digits only (6 digits = 1,000,000 combinations for brute-force protection)
 const pinSchema = z

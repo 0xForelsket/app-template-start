@@ -1,15 +1,37 @@
 import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { type VariantProps, cva } from "class-variance-authority";
 import type * as React from "react";
 
-function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+const cardVariants = cva(
+  "rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-200",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-gradient-to-b from-card to-card/80 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600",
+        flat: "bg-card shadow-none border-border",
+        outline: "bg-transparent border-2 border-border shadow-none",
+        ghost: "border-none shadow-none bg-transparent",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {
+  asChild?: boolean;
+}
+
+function Card({ className, variant, asChild = false, ...props }: CardProps) {
+  const Comp = asChild ? Slot : "div";
   return (
-    <div
-      className={cn(
-        "rounded-xl border bg-gradient-to-b from-card to-card/80 text-card-foreground",
-        "shadow-sm hover:shadow-lg transition-all duration-200",
-        "hover:border-slate-300 dark:hover:border-slate-600",
-        className
-      )}
+    <Comp
+      className={cn(cardVariants({ variant, className }))}
       {...props}
     />
   );
