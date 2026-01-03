@@ -21,15 +21,15 @@ async function seed() {
 
   try {
     console.log("Clearing existing data...");
-    await db.delete(schema.skillPrerequisites).catch(() => {});
-    await db.delete(schema.skills).catch(() => {});
-    await db.delete(schema.skillCategories).catch(() => {});
-    await db.delete(schema.projects).catch(() => {});
-    await db.delete(schema.attachments).catch(() => {});
-    await db.delete(schema.auditLogs).catch(() => {});
-    await db.delete(schema.users).catch(() => {});
-    await db.delete(schema.departments).catch(() => {});
-    await db.delete(schema.roles).catch(() => {});
+    await db.delete(schema.skillPrerequisites).catch(() => { });
+    await db.delete(schema.skills).catch(() => { });
+    await db.delete(schema.skillCategories).catch(() => { });
+    await db.delete(schema.projects).catch(() => { });
+    await db.delete(schema.attachments).catch(() => { });
+    await db.delete(schema.auditLogs).catch(() => { });
+    await db.delete(schema.users).catch(() => { });
+    await db.delete(schema.departments).catch(() => { });
+    await db.delete(schema.roles).catch(() => { });
 
     console.log("Creating roles...");
     const [employeeRole, supervisorRole, adminRole] = await db
@@ -143,44 +143,69 @@ async function seed() {
     ]);
     console.log("  Created 3 projects");
 
-    console.log("Creating skill categories...");
+    console.log("Creating skill categories (departments)...");
     const [catSafety, catEquipment, catQuality, catProcess, catLeadership] =
       await db
         .insert(schema.skillCategories)
         .values([
           {
             name: "Safety",
+            code: "SAFETY",
+            slug: "safety",
             description: "Safety-related skills and certifications",
             color: "#EF4444",
+            type: "department" as const,
+            depth: 0,
+            path: "safety",
             sortOrder: 1,
           },
           {
             name: "Equipment Operation",
+            code: "EQUIP",
+            slug: "equipment-operation",
             description: "Machine and equipment operation skills",
             color: "#3B82F6",
+            type: "department" as const,
+            depth: 0,
+            path: "equipment-operation",
             sortOrder: 2,
           },
           {
             name: "Quality",
+            code: "QC",
+            slug: "quality",
             description: "Quality control and inspection skills",
             color: "#10B981",
+            type: "department" as const,
+            depth: 0,
+            path: "quality",
             sortOrder: 3,
           },
           {
             name: "Process",
+            code: "PROC",
+            slug: "process",
             description: "Manufacturing process skills",
             color: "#F59E0B",
+            type: "department" as const,
+            depth: 0,
+            path: "process",
             sortOrder: 4,
           },
           {
             name: "Leadership",
+            code: "LEAD",
+            slug: "leadership",
             description: "Supervisory and leadership skills",
             color: "#8B5CF6",
+            type: "department" as const,
+            depth: 0,
+            path: "leadership",
             sortOrder: 5,
           },
         ])
         .returning();
-    console.log("  Created 5 skill categories");
+    console.log("  Created 5 skill categories (departments)");
 
     console.log("Creating skills...");
     await db.insert(schema.skills).values([

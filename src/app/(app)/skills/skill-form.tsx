@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,18 +16,36 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { Skill, SkillCategory } from "@/db/schema";
 import type { ActionResult } from "@/lib/types/actions";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { BookOpen, Building2, FolderKanban, Layers } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useMemo } from "react";
+
+interface CategoryWithParent extends SkillCategory {
+  parent?: SkillCategory | null;
+}
 
 interface Props {
   mode: "create" | "edit";
-  initialData?: Skill;
-  categories: SkillCategory[];
+  initialData?: Skill & { parentSkill?: Skill | null };
+  categories: CategoryWithParent[];
+  parentSkills?: Skill[];
   onSubmit: (formData: FormData) => Promise<ActionResult<{ id: string }>>;
 }
 
-export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
+export function SkillForm({
+  mode,
+  initialData,
+  categories,
+  parentSkills = [],
+  onSubmit,
+}: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get initial values from URL params (for creating from browse page)
+  const urlCategoryId = searchParams.get("categoryId");
+  const urlParentSkillId = searchParams.get("parentSkillId");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [requiresCertification, setRequiresCertification] = useState(
@@ -35,6 +54,28 @@ export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
   const [hasProficiencyLevels, setHasProficiencyLevels] = useState(
     initialData?.hasProficiencyLevels ?? false
   );
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialData?.categoryId || urlCategoryId || ""
+  );
+  const [selectedParentSkillId, setSelectedParentSkillId] = useState(
+    initialData?.parentSkillId || urlParentSkillId || ""
+  );
+
+  // Group categories by type
+  const groupedCategories = useMemo(() => {
+    const departments: CategoryWithParent[] = [];
+    const projects: CategoryWithParent[] = [];
+
+    for (const cat of categories) {
+      if (cat.type === "department") {
+        departments.push(cat);
+      } else {
+        projects.push(cat);
+      }
+    }
+
+    return { departments, projects };
+  }, [categories]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,6 +83,12 @@ export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+
+    // Add parentSkillId if selected
+    if (selectedParentSkillId) {
+      formData.set("parentSkillId", selectedParentSkillId);
+    }
+
     const result = await onSubmit(formData);
 
     if (!result.success) {
@@ -54,11 +101,20 @@ export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
     router.refresh();
   }
 
+  // Filter parent skills to only show those in the same category
+  const availableParentSkills = useMemo(() => {
+    if (!selectedCategoryId) return parentSkills;
+    return parentSkills.filter(
+      (s) => s.categoryId === selectedCategoryId && s.id !== initialData?.id
+    );
+  }, [parentSkills, selectedCategoryId, initialData?.id]);
+
   return (
     <form onSubmit={handleSubmit}>
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
             {mode === "create" ? "Create Skill" : "Edit Skill"}
           </CardTitle>
         </CardHeader>
@@ -66,6 +122,22 @@ export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
           {error && (
             <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
               {error}
+            </div>
+          )}
+
+          {/* Parent skill badge if creating sub-skill */}
+          {(initialData?.parentSkill || urlParentSkillId) && (
+            <div className="bg-muted/50 rounded-lg p-4 border border-border">
+              <div className="flex items-center gap-2 text-sm">
+                <Layers className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Creating sub-skill of:</span>
+                <Badge variant="secondary" className="font-mono">
+                  {initialData?.parentSkill?.code || "Parent Skill"}
+                </Badge>
+                <span className="font-medium">
+                  {initialData?.parentSkill?.name}
+                </span>
+              </div>
             </div>
           )}
 
@@ -108,23 +180,118 @@ export function SkillForm({ mode, initialData, categories, onSubmit }: Props) {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="categoryId">Category</Label>
-            <Select
-              name="categoryId"
-              defaultValue={initialData?.categoryId || ""}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Hierarchy Section */}
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium flex items-center gap-2">
+              <Layers className="h-4 w-4" />
+              Hierarchy
+            </h3>
+
+            {/* Category (Project) Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="categoryId">
+                <span className="flex items-center gap-1.5">
+                  <FolderKanban className="h-3.5 w-3.5" />
+                  Project (Category)
+                </span>
+              </Label>
+              <Select
+                name="categoryId"
+                value={selectedCategoryId}
+                onValueChange={setSelectedCategoryId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select project/category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groupedCategories.projects.length > 0 && (
+                    <>
+                      <div className="px-2 py-1.5 text-xs font-bold uppercase text-muted-foreground bg-muted/50">
+                        Projects
+                      </div>
+                      {groupedCategories.projects.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="h-3 w-3 rounded"
+                              style={{
+                                backgroundColor: category.color || "var(--primary)",
+                              }}
+                            />
+                            <span>{category.name}</span>
+                            {category.parent && (
+                              <span className="text-xs text-muted-foreground">
+                                ({category.parent.name})
+                              </span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {groupedCategories.departments.length > 0 && (
+                    <>
+                      <div className="px-2 py-1.5 text-xs font-bold uppercase text-muted-foreground bg-muted/50 mt-1">
+                        Departments (Legacy)
+                      </div>
+                      {groupedCategories.departments.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-3 w-3" />
+                            <span>{category.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Parent Skill Selection (for sub-skills) */}
+            {availableParentSkills.length > 0 && !urlParentSkillId && (
+              <div className="space-y-2">
+                <Label htmlFor="parentSkillId">
+                  <span className="flex items-center gap-1.5">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    Parent Skill (optional)
+                  </span>
+                </Label>
+                <Select
+                  value={selectedParentSkillId}
+                  onValueChange={setSelectedParentSkillId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="No parent (root skill)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No parent (root skill)</SelectItem>
+                    {availableParentSkills.map((skill) => (
+                      <SelectItem key={skill.id} value={skill.id}>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="font-mono text-xs">
+                            {skill.code}
+                          </Badge>
+                          <span>{skill.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Make this a sub-skill of another skill
+                </p>
+              </div>
+            )}
+
+            {/* Hidden input for parentSkillId from URL */}
+            {urlParentSkillId && (
+              <input
+                type="hidden"
+                name="parentSkillId"
+                value={urlParentSkillId}
+              />
+            )}
           </div>
 
           {/* Proficiency Settings */}

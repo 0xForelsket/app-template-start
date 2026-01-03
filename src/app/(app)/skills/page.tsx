@@ -1,37 +1,37 @@
-import { getSkillCategories } from "@/actions/skill-categories";
-import { getSkills, getSkillStats } from "@/actions/skills";
+import { getDepartments, getSkillCategoryStats } from "@/actions/skill-categories";
+import { getSkillStats } from "@/actions/skills";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/ui/page-layout";
 import { StatsTicker } from "@/components/ui/stats-ticker";
-import { Award, BookOpen, CheckCircle, Plus } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  Building2,
+  FolderKanban,
+  Layers,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
-import { SkillFilters } from "./skill-filters";
-import { SkillsTable } from "./skills-table";
+import { SkillHierarchyClient } from "./skill-hierarchy-client";
 
-interface Props {
-  searchParams: Promise<{
-    search?: string;
-    categoryId?: string;
-    isActive?: string;
-    requiresCertification?: string;
-  }>;
-}
-
-export default async function SkillsPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const [skills, categories, stats] = await Promise.all([
-    getSkills(params),
-    getSkillCategories({ isActive: "true" }),
+export default async function SkillsPage() {
+  const [departments, categoryStats, skillStats] = await Promise.all([
+    getDepartments(),
+    getSkillCategoryStats(),
     getSkillStats(),
   ]);
 
   return (
     <PageLayout
       title="Skill Catalog"
+      description="Browse and manage skills by department and project"
       headerActions={
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href="/skills/categories">Manage Categories</Link>
+            <Link href="/skills/categories">
+              <FolderKanban className="h-4 w-4 mr-2" />
+              Manage Categories
+            </Link>
           </Button>
           <Button asChild size="sm">
             <Link href="/skills/new">
@@ -45,29 +45,40 @@ export default async function SkillsPage({ searchParams }: Props) {
         <StatsTicker
           stats={[
             {
-              label: "Total Skills",
-              value: stats.total,
-              icon: BookOpen,
+              label: "Departments",
+              value: categoryStats.departments,
+              icon: Building2,
               variant: "default",
             },
             {
-              label: "Active",
-              value: stats.active,
-              icon: CheckCircle,
+              label: "Projects",
+              value: categoryStats.projects,
+              icon: FolderKanban,
+              variant: "primary",
+            },
+            {
+              label: "Total Skills",
+              value: skillStats.total,
+              icon: BookOpen,
               variant: "success",
             },
             {
+              label: "Sub-Skills",
+              value: skillStats.subSkills,
+              icon: Layers,
+              variant: "default",
+            },
+            {
               label: "Require Certification",
-              value: stats.requiresCertification,
+              value: skillStats.requiresCertification,
               icon: Award,
-              variant: "primary",
+              variant: "warning",
             },
           ]}
         />
       }
-      filters={<SkillFilters categories={categories} searchParams={params} />}
     >
-      <SkillsTable skills={skills} />
+      <SkillHierarchyClient departments={departments} />
     </PageLayout>
   );
 }

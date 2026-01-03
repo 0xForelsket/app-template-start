@@ -133,19 +133,43 @@ export const projects = pgTable(
 
 // ============ LMS DOMAIN: SKILLS ============
 
-export const skillCategories = pgTable("skill_categories", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => uuidv7()),
-  displayId: serial("display_id").notNull(),
-  name: text("name").unique().notNull(),
-  description: text("description"),
-  color: text("color"), // Hex color for UI display, e.g., "#EF4444"
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+// Category types for hierarchy (Department -> Project)
+export const categoryTypes = ["department", "project"] as const;
+export type CategoryType = (typeof categoryTypes)[number];
+
+export const skillCategories = pgTable(
+  "skill_categories",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    displayId: serial("display_id").notNull(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(), // URL-friendly identifier
+    code: text("code").unique().notNull(), // Short code like "ASSY", "WELD", "QC"
+    description: text("description"),
+    color: text("color"), // Hex color for UI display, e.g., "#EF4444"
+
+    // Hierarchy fields (materialized path approach)
+    parentId: text("parent_id").references((): any => skillCategories.id, {
+      onDelete: "cascade",
+    }),
+    path: text("path").notNull().default(""), // e.g., "assembly/project-a" or "" for root
+    depth: integer("depth").notNull().default(0), // 0 = department, 1 = project
+    type: text("type", { enum: categoryTypes }).notNull().default("department"),
+
+    sortOrder: integer("sort_order").notNull().default(0),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    parentIdx: index("category_parent_idx").on(table.parentId),
+    pathIdx: index("category_path_idx").on(table.path),
+    typeIdx: index("category_type_idx").on(table.type),
+    slugIdx: index("category_slug_idx").on(table.slug),
+  })
+);
 
 export const skills = pgTable(
   "skills",
@@ -158,6 +182,13 @@ export const skills = pgTable(
     code: text("code").unique().notNull(), // Short code like "LOTO", "FORK-01"
     description: text("description"),
     categoryId: text("category_id").references(() => skillCategories.id),
+
+    // Sub-skill hierarchy (e.g., "Riveting" -> "Hand Riveting", "Pneumatic Riveting")
+    parentSkillId: text("parent_skill_id").references((): any => skills.id, {
+      onDelete: "cascade",
+    }),
+    depth: integer("depth").notNull().default(0), // 0 = root skill, 1+ = sub-skill
+    path: text("path").notNull().default(""), // Materialized path: "riveting/hand-riveting"
 
     // Proficiency tracking
     hasProficiencyLevels: boolean("has_proficiency_levels")
@@ -183,6 +214,8 @@ export const skills = pgTable(
   },
   (table) => ({
     categoryIdx: index("skill_category_idx").on(table.categoryId),
+    parentIdx: index("skill_parent_idx").on(table.parentSkillId),
+    pathIdx: index("skill_path_idx").on(table.path),
     activeIdx: index("skill_active_idx").on(table.isActive),
     searchIdx: index("skill_search_idx").using(
       "gin",
@@ -322,7 +355,13 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
 
 export const skillCategoriesRelations = relations(
   skillCategories,
-  ({ many }) => ({
+  ({ one, many }) => ({
+    parent: one(skillCategories, {
+      fields: [skillCategories.parentId],
+      references: [skillCategories.id],
+      relationName: "categoryParent",
+    }),
+    children: many(skillCategories, { relationName: "categoryParent" }),
     skills: many(skills),
   })
 );
@@ -332,6 +371,12 @@ export const skillsRelations = relations(skills, ({ one, many }) => ({
     fields: [skills.categoryId],
     references: [skillCategories.id],
   }),
+  parentSkill: one(skills, {
+    fields: [skills.parentSkillId],
+    references: [skills.id],
+    relationName: "skillParent",
+  }),
+  childSkills: many(skills, { relationName: "skillParent" }),
   prerequisites: many(skillPrerequisites, { relationName: "skillPrereqs" }),
   prerequisiteFor: many(skillPrerequisites, { relationName: "prereqSkill" }),
 }));
