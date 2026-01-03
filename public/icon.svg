@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: Dark Charcoal for high contrast -->
+  <rect width="512" height="512" rx="120" fill="#1A1A1A" />
+  
+  <!-- Centered Symbol Group -->
+  <g transform="translate(141, 128)">
+    <!-- The Stem (Cream) -->
+    <!-- Modeled after a heavy I-beam or machined part -->
+    <path d="M40 0 L100 0 L100 256 L40 256 Z" fill="#F3F1E7" />
+    
+    <!-- Top Arm (Terracotta) - Abstract Wrench Jaw -->
+    <path d="M100 0 L240 0 C260 0 280 20 280 40 C280 60 260 80 240 80 L100 80 Z" fill="#E07A5F" />
+    
+    <!-- Middle Arm (Cream) -->
+    <path d="M100 110 L190 110 C205 110 215 125 215 140 C215 155 205 170 190 170 L100 170 Z" fill="#F3F1E7" />
+    
+    <!-- Industrial Detail: Hex Bolt in the 'F' Negative Space -->
+    <path d="M100 110 L130 110 L130 170 L100 170 Z" fill="#1A1A1A" opacity="0.2" />
+    
+    <!-- Floating "Nut" Accent (Bottom Right) -->
+    <path d="M180 210 L220 210 L240 245 L220 280 L180 280 L160 245 Z" fill="none" stroke="#E07A5F" stroke-width="8" />
+  </g>
+</svg>

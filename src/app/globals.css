@@ -1,0 +1,687 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-success: var(--success-500);
+  --color-warning: var(--warning-500);
+  --color-danger: var(--danger-500);
+
+  /* Full Scale Mappings for Design System Page */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
+
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-900: var(--secondary-900);
+  --color-secondary-950: var(--secondary-950);
+
+  --color-success-50: var(--success-50);
+  --color-success-100: var(--success-100);
+  --color-success-200: var(--success-200);
+  --color-success-300: var(--success-300);
+  --color-success-400: var(--success-400);
+  --color-success-500: var(--success-500);
+  --color-success-600: var(--success-600);
+  --color-success-700: var(--success-700);
+  --color-success-800: var(--success-800);
+  --color-success-900: var(--success-900);
+  --color-success-950: var(--success-950);
+
+  --color-warning-50: var(--warning-50);
+  --color-warning-100: var(--warning-100);
+  --color-warning-200: var(--warning-200);
+  --color-warning-300: var(--warning-300);
+  --color-warning-400: var(--warning-400);
+  --color-warning-500: var(--warning-500);
+  --color-warning-600: var(--warning-600);
+  --color-warning-700: var(--warning-700);
+  --color-warning-800: var(--warning-800);
+  --color-warning-900: var(--warning-900);
+  --color-warning-950: var(--warning-950);
+
+  --color-danger-50: var(--danger-50);
+  --color-danger-100: var(--danger-100);
+  --color-danger-200: var(--danger-200);
+  --color-danger-300: var(--danger-300);
+  --color-danger-400: var(--danger-400);
+  --color-danger-500: var(--danger-500);
+  --color-danger-600: var(--danger-600);
+  --color-danger-700: var(--danger-700);
+  --color-danger-800: var(--danger-800);
+  --color-danger-900: var(--danger-900);
+  --color-danger-950: var(--danger-950);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular,
+    monospace;
+
+  --radius-theme: var(--radius);
+
+  /* Custom Animations */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes reveal-right {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes scan {
+    0% {
+      top: -10%;
+    }
+    100% {
+      top: 110%;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  --animation-fade-in-up: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animation-reveal-right: reveal-right 1.2s cubic-bezier(0.77, 0, 0.175, 1)
+    forwards;
+  --animation-scan: scan 3s linear infinite;
+  --animation-float: float 6s ease-in-out infinite;
+  --animation-spin-slow: spin 12s linear infinite;
+  --animation-reverse-spin: spin 8s linear reverse infinite;
+}
+
+/* ============================================
+   VARIABLE DEFINITIONS
+   ============================================ */
+
+/* 1. ELEGANT THEME (Landing Page Inspired) */
+:root {
+  --background: #f3f1e7;
+  --foreground: #1a1a1a;
+  --card: #eae8de;
+  --card-foreground: #1a1a1a;
+  --popover: #f3f1e7;
+  --popover-foreground: #1a1a1a;
+  --primary: #000000;
+  --primary-foreground: #f3f1e7;
+  --secondary: #e6e4d9;
+  --secondary-foreground: #1a1a1a;
+  --muted: #e6e4d9;
+  --muted-foreground: #555555;
+  --accent: #000000;
+  --accent-foreground: #f3f1e7;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(26, 26, 26, 0.08);
+  --input: rgba(26, 26, 26, 0.1);
+  --ring: #1a1a1a;
+  --radius: 2rem;
+  --sidebar: #e5e1d3;
+  --sidebar-foreground: #1a1a1a;
+
+  --primary-50: #f5f5f5;
+  --primary-100: #e5e5e5;
+  --primary-200: #cccccc;
+  --primary-300: #a3a3a3;
+  --primary-400: #737373;
+  --primary-500: #525252;
+  --primary-600: #404040;
+  --primary-700: #2d2d2d;
+  --primary-800: #1a1a1a;
+  --primary-900: #0a0a0a;
+  --primary-950: #000000;
+  --secondary-50: #fafaf9;
+  --secondary-100: #f5f5f4;
+  --secondary-200: #e7e5e4;
+  --secondary-300: #d6d3d1;
+  --secondary-400: #a8a29e;
+  --secondary-500: #78716c;
+  --secondary-600: #57534e;
+  --secondary-700: #44403c;
+  --secondary-800: #292524;
+  --secondary-900: #1c1917;
+  --secondary-950: #0c0a09;
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  --success-800: #166534;
+  --success-900: #14532d;
+  --success-950: #052e16;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-800: #92400e;
+  --warning-900: #78350f;
+  --warning-950: #451a03;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-200: #fecaca;
+  --danger-300: #fca5a5;
+  --danger-400: #f87171;
+  --danger-500: #ef4444;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --danger-800: #991b1b;
+  --danger-900: #7f1d1d;
+  --danger-950: #450a0a;
+
+  --grid-color: transparent;
+}
+
+/* 2. INDUSTRIAL THEME (Old Clean Look / Black Sidebar / Orange Accents) */
+[data-theme="industrial"] {
+  --background: #f8fafc;
+  --foreground: #020617; /* High contrast black/slate */
+  --card: #ffffff;
+  --card-foreground: #020617;
+  --popover: #ffffff;
+  --popover-foreground: #020617;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #475569;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f97316;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #f97316;
+  --radius: 0.375rem; /* Industrial precision */
+  --sidebar: #000000; /* COMPLETELY BLACK SIDEBAR */
+  --sidebar-foreground: #e2e8f0;
+
+  --primary-50: #fff7ed;
+  --primary-100: #ffedd5;
+  --primary-200: #fed7aa;
+  --primary-300: #fdba74;
+  --primary-400: #fb923c;
+  --primary-500: #f97316;
+  --primary-600: #ea580c;
+  --primary-700: #c2410c;
+  --primary-800: #9a3412;
+  --primary-900: #7c2d12;
+  --primary-950: #431407;
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+  --secondary-950: #020617;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-200: #a7f3d0;
+  --success-300: #6ee7b7;
+  --success-400: #34d399;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --success-800: #065f46;
+  --success-900: #064e3b;
+  --success-950: #022c22;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-800: #92400e;
+  --warning-900: #78350f;
+  --warning-950: #451a03;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-200: #fecaca;
+  --danger-300: #fca5a5;
+  --danger-400: #f87171;
+  --danger-500: #ef4444;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --danger-800: #991b1b;
+  --danger-900: #7f1d1d;
+  --danger-950: #450a0a;
+
+  --grid-color: rgba(148, 163, 184, 0.12);
+}
+
+/* Industrial Theme Sidebar Override */
+[data-theme="industrial"] .bg-sidebar {
+  --foreground: var(--sidebar-foreground);
+  --color-foreground: var(--sidebar-foreground);
+  --muted-foreground: #94a3b8;
+  --color-muted-foreground: #94a3b8;
+  color: var(--sidebar-foreground);
+}
+
+[data-theme="industrial"] .bg-sidebar .text-foreground {
+  color: var(--sidebar-foreground);
+}
+[data-theme="industrial"] .bg-sidebar .text-muted-foreground {
+  color: #94a3b8;
+}
+
+/* 3. DARK MODE (Classic Neutral Dark) */
+[data-theme="dark"],
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #141417;
+  --card-foreground: #fafafa;
+  --popover: #141417;
+  --popover-foreground: #fafafa;
+  --primary: #ffffff;
+  --primary-foreground: #09090b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #ffffff;
+  --accent-foreground: #09090b;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --input: #3f3f46;
+  --ring: #ffffff;
+  --sidebar: #050505;
+  --sidebar-foreground: #fafafa;
+  --radius: 0.5rem;
+
+  --primary-50: #f9f9f9;
+  --primary-100: #f2f2f2;
+  --primary-200: #e5e5e5;
+  --primary-300: #d4d4d4;
+  --primary-400: #a3a3a3;
+  --primary-500: #737373;
+  --primary-600: #525252;
+  --primary-700: #404040;
+  --primary-800: #262626;
+  --primary-900: #171717;
+  --primary-950: #0a0a0a;
+  --secondary-50: #27272a;
+  --secondary-100: #3f3f46;
+  --secondary-200: #52525b;
+  --secondary-300: #71717a;
+  --secondary-400: #a1a1aa;
+  --secondary-500: #d4d4d8;
+  --secondary-600: #e4e4e7;
+  --secondary-700: #f4f4f5;
+  --secondary-800: #fafafa;
+  --secondary-900: #ffffff;
+
+  --success-50: #064e3b;
+  --success-100: #065f46;
+  --success-200: #047857;
+  --success-300: #059669;
+  --success-400: #10b981;
+  --success-500: #34d399;
+  --success-600: #6ee7b7;
+  --success-700: #a7f3d0;
+  --success-800: #d1fae5;
+  --success-900: #ecfdf5;
+  --warning-50: #78350f;
+  --warning-100: #92400e;
+  --warning-200: #b45309;
+  --warning-300: #d97706;
+  --warning-400: #f59e0b;
+  --warning-500: #fbbf24;
+  --warning-600: #fcd34d;
+  --warning-700: #fde68a;
+  --warning-800: #fef3c7;
+  --warning-900: #fffbeb;
+  --danger-50: #7f1d1d;
+  --danger-100: #991b1b;
+  --danger-200: #b91c1c;
+  --danger-300: #dc2626;
+  --danger-400: #ef4444;
+  --danger-500: #f87171;
+  --danger-600: #fca5a5;
+  --danger-700: #fecaca;
+  --danger-800: #fee2e2;
+  --danger-900: #fef2f2;
+
+  --grid-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    background-color: var(--background);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: color 0.5s, background-color 0.5s;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  [data-theme="industrial"] body {
+    background-image: radial-gradient(var(--grid-color) 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-serif-brand {
+    font-family: var(--font-serif);
+    letter-spacing: -0.04em;
+    font-weight: 800;
+  }
+}
+
+@layer components {
+  .sidebar-link-active {
+    background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+    color: var(--primary);
+    border-right: 4px solid var(--primary);
+  }
+
+  .card-premium {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  .text-industrial-mono {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+  }
+}
+
+.industrial-grid {
+  background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Stagger Animations */
+.animate-stagger-1 {
+  animation-delay: 100ms;
+}
+.animate-stagger-2 {
+  animation-delay: 200ms;
+}
+.animate-stagger-3 {
+  animation-delay: 300ms;
+}
+.animate-stagger-4 {
+  animation-delay: 400ms;
+}
+.animate-stagger-5 {
+  animation-delay: 500ms;
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   PRINT STYLES - Work Order Pages
+   ============================================ */
+@media print {
+  /* Reset background for printing */
+  html,
+  body {
+    background: white !important;
+    background-image: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide navigation elements */
+  [class*="print:hidden"],
+  nav,
+  header,
+  aside,
+  [data-sidebar],
+  [data-bottom-nav],
+  .bottom-nav,
+  button:not([class*="print:block"]),
+  form,
+  textarea,
+  input,
+  .industrial-grid {
+    display: none !important;
+  }
+
+  /* Show main content full width */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  [class*="print:block"] {
+    display: block !important;
+  }
+
+  /* Work order specific print styles */
+  .work-order-print-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure good contrast */
+  * {
+    color: black !important;
+    border-color: #333 !important;
+  }
+
+  /* Style cards for print */
+  .rounded-xl,
+  .rounded-lg {
+    border-radius: 4px !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+
+  /* Badge styling for print */
+  .bg-primary-50,
+  .bg-amber-50,
+  .bg-emerald-50,
+  .bg-slate-50,
+  .bg-slate-100 {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* Page break controls */
+  [class*="print:page-break-before"] {
+    page-break-before: always;
+  }
+
+  [class*="print:page-break-after"] {
+    page-break-after: always;
+  }
+
+  [class*="print:avoid-break"] {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure text is readable */
+  .text-muted-foreground {
+    color: #333 !important;
+  }
+
+  .text-foreground {
+    color: #000 !important;
+  }
+
+  /* Links should be visible but not clickable style */
+  a {
+    text-decoration: none !important;
+  }
+
+  /* Hide mobile-specific elements */
+  [class*="lg:hidden"] {
+    display: none !important;
+  }
+
+  /* Show desktop content */
+  .hidden[class*="lg:block"] {
+    display: block !important;
+  }
+
+  /* Print header styling */
+  .print-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+
+  /* Activity log print styling */
+  .divide-y > div {
+    page-break-inside: avoid;
+  }
+
+  /* Image sizing for print */
+  img {
+    max-width: 200px !important;
+    max-height: 150px !important;
+  }
+
+  /* Maintain layout structure */
+  .grid {
+    display: block !important;
+  }
+
+  .grid > div {
+    margin-bottom: 16px;
+  }
+
+  /* Page setup */
+  @page {
+    margin-top: 0.75in;
+    margin-right: 0.75in;
+    margin-bottom: 0.75in;
+    margin-left: 0.75in;
+    size: letter;
+  }
+}
