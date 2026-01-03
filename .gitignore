@@ -61,3 +61,4 @@ bun.lockb
 # PWA
 public/sw.js
 public/workbox-*.js
+server.log
