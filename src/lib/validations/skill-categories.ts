@@ -17,7 +17,10 @@ export const skillCategorySchema = z.object({
     .string()
     .min(1, "Slug is required")
     .max(100)
-    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, and hyphens only"),
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug must be lowercase letters, numbers, and hyphens only"
+    ),
   description: z.string().max(500).nullable().optional(),
   color: z
     .string()

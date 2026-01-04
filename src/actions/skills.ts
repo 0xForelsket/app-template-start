@@ -83,9 +83,7 @@ export async function getSkills(filters?: {
       count: sql<number>`count(*)`,
     })
     .from(skills)
-    .where(
-      sql`${skills.parentSkillId} IS NOT NULL`
-    )
+    .where(sql`${skills.parentSkillId} IS NOT NULL`)
     .groupBy(skills.parentSkillId);
 
   const countsMap = new Map(
@@ -244,7 +242,8 @@ export async function getSkillBreadcrumbs(skillId: string): Promise<
   // Add parent skill hierarchy
   if (skill.parentSkillId) {
     const parentTrail: typeof breadcrumbs = [];
-    let currentParent: typeof skill.parentSkill | null = skill.parentSkill ?? null;
+    let currentParent: typeof skill.parentSkill | null =
+      skill.parentSkill ?? null;
 
     while (currentParent) {
       parentTrail.unshift({
@@ -567,7 +566,10 @@ export async function addSkillPrerequisite(
   const existing = await db.query.skillPrerequisites.findFirst({
     where: and(
       eq(skillPrerequisites.skillId, parsed.data.skillId),
-      eq(skillPrerequisites.prerequisiteSkillId, parsed.data.prerequisiteSkillId)
+      eq(
+        skillPrerequisites.prerequisiteSkillId,
+        parsed.data.prerequisiteSkillId
+      )
     ),
   });
   if (existing) {

@@ -21,15 +21,15 @@ async function seed() {
 
   try {
     console.log("Clearing existing data...");
-    await db.delete(schema.skillPrerequisites).catch(() => { });
-    await db.delete(schema.skills).catch(() => { });
-    await db.delete(schema.skillCategories).catch(() => { });
-    await db.delete(schema.projects).catch(() => { });
-    await db.delete(schema.attachments).catch(() => { });
-    await db.delete(schema.auditLogs).catch(() => { });
-    await db.delete(schema.users).catch(() => { });
-    await db.delete(schema.departments).catch(() => { });
-    await db.delete(schema.roles).catch(() => { });
+    await db.delete(schema.skillPrerequisites).catch(() => {});
+    await db.delete(schema.skills).catch(() => {});
+    await db.delete(schema.skillCategories).catch(() => {});
+    await db.delete(schema.projects).catch(() => {});
+    await db.delete(schema.attachments).catch(() => {});
+    await db.delete(schema.auditLogs).catch(() => {});
+    await db.delete(schema.users).catch(() => {});
+    await db.delete(schema.departments).catch(() => {});
+    await db.delete(schema.roles).catch(() => {});
 
     console.log("Creating roles...");
     const [employeeRole, supervisorRole, adminRole] = await db
@@ -144,7 +144,7 @@ async function seed() {
     console.log("  Created 3 projects");
 
     console.log("Creating skill categories (departments)...");
-    const [catSafety, catEquipment, catQuality, catProcess, catLeadership] =
+    const [catSafety, catEquipment, catQuality, catProcess, _catLeadership] =
       await db
         .insert(schema.skillCategories)
         .values([

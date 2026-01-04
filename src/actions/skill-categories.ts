@@ -47,13 +47,13 @@ export async function getDepartments(): Promise<SkillCategoryWithHierarchy[]> {
       departmentId: skillCategories.id,
       projectCount: sql<number>`(
         SELECT COUNT(*) FROM skill_categories sc
-        WHERE sc.parent_id = ${skillCategories.id}
+        WHERE sc.parent_id = skill_categories.id
         AND sc.type = 'project'
       )`,
       skillCount: sql<number>`(
         SELECT COUNT(*) FROM skills s
         INNER JOIN skill_categories sc ON s.category_id = sc.id
-        WHERE sc.parent_id = ${skillCategories.id} OR s.category_id = ${skillCategories.id}
+        WHERE sc.parent_id = skill_categories.id OR s.category_id = skill_categories.id
       )`,
     })
     .from(skillCategories)
@@ -103,9 +103,7 @@ export async function getProjects(
     )
     .groupBy(skills.categoryId);
 
-  const countsMap = new Map(
-    countsResult.map((c) => [c.projectId, c.count])
-  );
+  const countsMap = new Map(countsResult.map((c) => [c.projectId, c.count]));
 
   return projects.map((proj) => ({
     ...proj,
@@ -124,7 +122,7 @@ export async function getSkillCategories(filters?: {
 
   if (filters?.search) {
     conditions.push(
-      sql`(${skillCategories.name} ILIKE ${"%" + filters.search + "%"} OR ${skillCategories.code} ILIKE ${"%" + filters.search + "%"})`
+      sql`(${skillCategories.name} ILIKE ${`%${filters.search}%`} OR ${skillCategories.code} ILIKE ${`%${filters.search}%`})`
     );
   }
 
@@ -248,7 +246,10 @@ export async function createSkillCategory(
   // Generate code if not provided
   let code = formData.get("code")?.toString()?.toUpperCase();
   if (!code) {
-    code = name.toUpperCase().replace(/[^A-Z0-9]/g, "").substring(0, 10);
+    code = name
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .substring(0, 10);
   }
 
   // Determine type and depth based on parent
@@ -293,7 +294,10 @@ export async function createSkillCategory(
     where: eq(skillCategories.code, code),
   });
   if (existingCode) {
-    return { success: false, error: "A category with this code already exists" };
+    return {
+      success: false,
+      error: "A category with this code already exists",
+    };
   }
 
   const [result] = await db
@@ -365,7 +369,10 @@ export async function updateSkillCategory(
     ),
   });
   if (existingCode) {
-    return { success: false, error: "A category with this code already exists" };
+    return {
+      success: false,
+      error: "A category with this code already exists",
+    };
   }
 
   await db
@@ -403,7 +410,8 @@ export async function deleteSkillCategory(
   if (hasChildren) {
     return {
       success: false,
-      error: "Cannot delete category with sub-categories. Remove children first.",
+      error:
+        "Cannot delete category with sub-categories. Remove children first.",
     };
   }
 

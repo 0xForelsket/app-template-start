@@ -18,7 +18,7 @@ import type { Skill, SkillCategory } from "@/db/schema";
 import type { ActionResult } from "@/lib/types/actions";
 import { BookOpen, Building2, FolderKanban, Layers } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface CategoryWithParent extends SkillCategory {
   parent?: SkillCategory | null;
@@ -130,7 +130,9 @@ export function SkillForm({
             <div className="bg-muted/50 rounded-lg p-4 border border-border">
               <div className="flex items-center gap-2 text-sm">
                 <Layers className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Creating sub-skill of:</span>
+                <span className="text-muted-foreground">
+                  Creating sub-skill of:
+                </span>
                 <Badge variant="secondary" className="font-mono">
                   {initialData?.parentSkill?.code || "Parent Skill"}
                 </Badge>
@@ -215,7 +217,8 @@ export function SkillForm({
                             <div
                               className="h-3 w-3 rounded"
                               style={{
-                                backgroundColor: category.color || "var(--primary)",
+                                backgroundColor:
+                                  category.color || "var(--primary)",
                               }}
                             />
                             <span>{category.name}</span>
@@ -269,7 +272,10 @@ export function SkillForm({
                     {availableParentSkills.map((skill) => (
                       <SelectItem key={skill.id} value={skill.id}>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="font-mono text-xs">
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-xs"
+                          >
                             {skill.code}
                           </Badge>
                           <span>{skill.name}</span>

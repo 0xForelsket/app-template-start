@@ -48,7 +48,11 @@ export default async function CategoryDetailPage({ params }: Props) {
         </form>
       }
     >
-      <CategoryForm mode="edit" initialData={category} onSubmit={handleUpdate} />
+      <CategoryForm
+        mode="edit"
+        initialData={category}
+        onSubmit={handleUpdate}
+      />
     </PageLayout>
   );
 }

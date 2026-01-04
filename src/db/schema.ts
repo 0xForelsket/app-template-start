@@ -24,7 +24,12 @@ export const projectStatuses = [
 export type ProjectStatus = (typeof projectStatuses)[number];
 
 // Generic entity types for attachments and audit logs
-export const entityTypes = ["user", "project", "skill", "skill_category"] as const;
+export const entityTypes = [
+  "user",
+  "project",
+  "skill",
+  "skill_category",
+] as const;
 export type EntityType = (typeof entityTypes)[number];
 
 // Attachment types
@@ -151,6 +156,7 @@ export const skillCategories = pgTable(
     color: text("color"), // Hex color for UI display, e.g., "#EF4444"
 
     // Hierarchy fields (materialized path approach)
+    // biome-ignore lint/suspicious/noExplicitAny: Required for Drizzle ORM self-referential foreign key
     parentId: text("parent_id").references((): any => skillCategories.id, {
       onDelete: "cascade",
     }),
@@ -184,6 +190,7 @@ export const skills = pgTable(
     categoryId: text("category_id").references(() => skillCategories.id),
 
     // Sub-skill hierarchy (e.g., "Riveting" -> "Hand Riveting", "Pneumatic Riveting")
+    // biome-ignore lint/suspicious/noExplicitAny: Required for Drizzle ORM self-referential foreign key
     parentSkillId: text("parent_skill_id").references((): any => skills.id, {
       onDelete: "cascade",
     }),

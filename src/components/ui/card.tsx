@@ -30,10 +30,7 @@ export interface CardProps
 function Card({ className, variant, asChild = false, ...props }: CardProps) {
   const Comp = asChild ? Slot : "div";
   return (
-    <Comp
-      className={cn(cardVariants({ variant, className }))}
-      {...props}
-    />
+    <Comp className={cn(cardVariants({ variant, className }))} {...props} />
   );
 }
 

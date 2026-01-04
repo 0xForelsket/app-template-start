@@ -1,4 +1,7 @@
-import { getDepartments, getSkillCategoryStats } from "@/actions/skill-categories";
+import {
+  getDepartments,
+  getSkillCategoryStats,
+} from "@/actions/skill-categories";
 import { getSkillStats } from "@/actions/skills";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/ui/page-layout";

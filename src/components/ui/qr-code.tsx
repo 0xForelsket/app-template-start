@@ -57,6 +57,7 @@ export function QRCode({ value, size = 128, className }: QRCodeProps) {
   return (
     <div
       className={cn("bg-white p-1 rounded-lg inline-block", className)}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG from trusted QRCode library
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

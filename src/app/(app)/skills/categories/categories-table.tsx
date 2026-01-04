@@ -64,7 +64,9 @@ export function CategoriesTable({ categories }: Props) {
       data={categories}
       columns={columns}
       getRowId={(row) => row.id}
-      onRowClick={(category) => router.push(`/skills/categories/${category.id}`)}
+      onRowClick={(category) =>
+        router.push(`/skills/categories/${category.id}`)
+      }
       emptyMessage="No categories found"
       emptyIcon={Folder}
     />

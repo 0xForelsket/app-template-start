@@ -64,6 +64,7 @@ export function AccordionItem({
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
+          // biome-ignore lint/suspicious/noExplicitAny: React.cloneElement requires any for generic child types
           return React.cloneElement(child as React.ReactElement<any>, {
             value,
           });
