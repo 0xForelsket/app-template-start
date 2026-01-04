@@ -21,8 +21,8 @@ export function UserFilters({ searchParams }: UserFiltersProps) {
           name: "role",
           options: [
             { value: "all", label: "ANY ROLE" },
-            { value: "operator", label: "OPERATOR" },
-            { value: "tech", label: "TECHNICIAN" },
+            { value: "employee", label: "EMPLOYEE" },
+            { value: "supervisor", label: "SUPERVISOR" },
             { value: "admin", label: "ADMIN" },
           ],
         },

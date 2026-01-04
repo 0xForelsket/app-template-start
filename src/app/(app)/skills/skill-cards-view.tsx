@@ -11,17 +11,17 @@ import {
   BookOpen,
   Building2,
   ChevronRight,
-  FolderKanban,
   Layers,
+  LayoutGrid,
 } from "lucide-react";
 import Link from "next/link";
 
 interface SkillCardsViewProps {
   breadcrumbs: BreadcrumbItem[];
   departments?: SkillCategoryWithHierarchy[];
-  projects?: SkillCategoryWithHierarchy[];
+  areas?: SkillCategoryWithHierarchy[];
   skills?: SkillWithHierarchy[];
-  currentLevel: "departments" | "projects" | "skills" | "subskills";
+  currentLevel: "departments" | "areas" | "skills" | "subskills";
   currentCategory?: SkillCategoryWithHierarchy;
   currentSkill?: SkillWithHierarchy;
 }
@@ -29,7 +29,7 @@ interface SkillCardsViewProps {
 export function SkillCardsView({
   breadcrumbs,
   departments,
-  projects,
+  areas,
   skills,
   currentLevel,
   currentCategory,
@@ -66,10 +66,10 @@ export function SkillCardsView({
               backgroundColor: currentCategory?.color || "var(--primary)",
             }}
           >
-            {currentLevel === "projects" ? (
+            {currentLevel === "areas" ? (
               <Building2 className="h-7 w-7 text-white" />
             ) : currentLevel === "skills" ? (
-              <FolderKanban className="h-7 w-7 text-white" />
+              <LayoutGrid className="h-7 w-7 text-white" />
             ) : (
               <BookOpen className="h-7 w-7 text-white" />
             )}
@@ -129,8 +129,8 @@ export function SkillCardsView({
                     )}
                     <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       <div className="flex items-center gap-1.5">
-                        <FolderKanban className="h-3.5 w-3.5" />
-                        <span>{dept.childCount ?? 0} Projects</span>
+                        <LayoutGrid className="h-3.5 w-3.5" />
+                        <span>{areas?.length ?? 0} Areas</span>
                       </div>
                       <div className="w-px h-3 bg-border" />
                       <div className="flex items-center gap-1.5">
@@ -146,24 +146,24 @@ export function SkillCardsView({
         </motion.div>
       )}
 
-      {/* Project Cards */}
-      {currentLevel === "projects" && projects && (
+      {/* Area Cards */}
+      {currentLevel === "areas" && areas && (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {projects.map((proj) => (
-            <motion.div key={proj.id} variants={itemVariants}>
+          {areas.map((area) => (
+            <motion.div key={area.id} variants={itemVariants}>
               <Link
-                href={`/skills/browse/${currentCategory?.slug}/${proj.slug}`}
+                href={`/skills/browse/${currentCategory?.slug}/${area.slug}`}
               >
                 <Card className="group relative overflow-hidden hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer">
                   <div
                     className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity"
                     style={{
-                      background: `linear-gradient(135deg, ${proj.color || currentCategory?.color || "#6366f1"} 0%, transparent 100%)`,
+                      background: `linear-gradient(135deg, ${area.color || currentCategory?.color || "#6366f1"} 0%, transparent 100%)`,
                     }}
                   />
                   <CardHeader className="pb-2">
@@ -172,30 +172,30 @@ export function SkillCardsView({
                         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-md"
                         style={{
                           backgroundColor:
-                            proj.color ||
+                            area.color ||
                             currentCategory?.color ||
                             "var(--primary)",
                         }}
                       >
-                        <FolderKanban className="h-6 w-6 text-white" />
+                        <LayoutGrid className="h-6 w-6 text-white" />
                       </div>
                       <Badge variant="outline" className="font-mono text-xs">
-                        {proj.code}
+                        {area.code}
                       </Badge>
                     </div>
                     <CardTitle className="mt-4 text-base font-black uppercase tracking-tight">
-                      {proj.name}
+                      {area.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {proj.description && (
+                    {area.description && (
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {proj.description}
+                        {area.description}
                       </p>
                     )}
                     <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       <BookOpen className="h-3.5 w-3.5" />
-                      <span>{proj.skillCount ?? 0} Skills</span>
+                      <span>{area.skillCount ?? 0} Skills</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -288,7 +288,7 @@ export function SkillCardsView({
       {/* Empty State */}
       {((currentLevel === "departments" &&
         (!departments || departments.length === 0)) ||
-        (currentLevel === "projects" && (!projects || projects.length === 0)) ||
+        (currentLevel === "areas" && (!areas || areas.length === 0)) ||
         ((currentLevel === "skills" || currentLevel === "subskills") &&
           (!skills || skills.length === 0))) && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -301,8 +301,8 @@ export function SkillCardsView({
           <p className="text-sm text-muted-foreground mt-2 max-w-[300px]">
             {currentLevel === "departments" &&
               "No departments have been created yet."}
-            {currentLevel === "projects" && "No projects in this department."}
-            {currentLevel === "skills" && "No skills in this project."}
+            {currentLevel === "areas" && "No areas in this department."}
+            {currentLevel === "skills" && "No skills in this area."}
             {currentLevel === "subskills" && "No sub-skills for this skill."}
           </p>
         </div>

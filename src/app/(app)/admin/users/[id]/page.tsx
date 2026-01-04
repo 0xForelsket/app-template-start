@@ -1,3 +1,4 @@
+import { getDepartments } from "@/actions/departments";
 import { getAllRoles, getUserById, updateUser } from "@/actions/users";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -12,7 +13,11 @@ export default async function EditUserPage({
 }) {
   const { id: userId } = await params;
 
-  const [user, roles] = await Promise.all([getUserById(userId), getAllRoles()]);
+  const [user, roles, departments] = await Promise.all([
+    getUserById(userId),
+    getAllRoles(),
+    getDepartments(),
+  ]);
 
   if (!user) {
     notFound();
@@ -33,9 +38,9 @@ export default async function EditUserPage({
         <div className="flex items-center gap-4">
           <Link
             href="/admin/users"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition-colors hover:bg-muted"
           >
-            <ArrowLeft className="h-5 w-5 text-zinc-600" />
+            <ArrowLeft className="h-5 w-5 text-muted-foreground" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{user.name}</h1>
@@ -45,16 +50,18 @@ export default async function EditUserPage({
         <DeleteUserButton userId={user.id} userName={user.name} />
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <UserForm
           mode="edit"
           roles={roles}
+          departments={departments}
           initialData={{
             id: user.id,
             employeeId: user.employeeId,
             name: user.name,
             email: user.email,
             roleId: user.roleId,
+            departmentId: user.departmentId,
             isActive: user.isActive,
           }}
           onSubmit={handleUpdate}

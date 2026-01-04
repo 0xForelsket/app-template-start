@@ -1,7 +1,7 @@
 import { PERMISSIONS, type Permission } from "@/lib/permissions";
 import {
   BookOpen,
-  FolderKanban,
+  Building2,
   Home,
   Settings2,
   Shield,
@@ -29,7 +29,7 @@ export const navGroups: NavGroup[] = [
         label: "Dashboard",
         href: "/dashboard",
         icon: <Home className="h-5 w-5" />,
-        permission: PERMISSIONS.PROJECT_VIEW,
+        permission: PERMISSIONS.DEPARTMENT_VIEW,
       },
     ],
   },
@@ -45,19 +45,14 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Main",
-    items: [
-      {
-        label: "Projects",
-        href: "/projects",
-        icon: <FolderKanban className="h-5 w-5" />,
-        permission: PERMISSIONS.PROJECT_VIEW,
-      },
-    ],
-  },
-  {
     label: "Administration",
     items: [
+      {
+        label: "Departments",
+        href: "/admin/departments",
+        icon: <Building2 className="h-5 w-5" />,
+        permission: PERMISSIONS.DEPARTMENT_VIEW,
+      },
       {
         label: "Users",
         href: "/admin/users",

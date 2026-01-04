@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const categoryTypes = ["department", "project"] as const;
+export const categoryTypes = ["department", "area"] as const;
 export type CategoryType = (typeof categoryTypes)[number];
 
 export const skillCategorySchema = z.object({
@@ -37,7 +37,7 @@ export type SkillCategoryFormData = z.infer<typeof skillCategorySchema>;
 
 export const skillCategoryFilterSchema = z.object({
   search: z.string().optional(),
-  type: z.enum(["department", "project", "all"]).optional(),
+  type: z.enum(["department", "area", "all"]).optional(),
   parentId: z.string().optional(),
   isActive: z.enum(["true", "false", "all"]).optional(),
 });

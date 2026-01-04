@@ -23,10 +23,7 @@ interface OperatorNavProps {
 export function OperatorNav({ user, avatarUrl }: OperatorNavProps) {
   const pathname = usePathname();
 
-  const navItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/projects", label: "Projects" },
-  ];
+  const navItems = [{ href: "/dashboard", label: "Dashboard" }];
 
   return (
     <div className="flex items-center gap-4">

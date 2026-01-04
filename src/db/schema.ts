@@ -138,8 +138,8 @@ export const projects = pgTable(
 
 // ============ LMS DOMAIN: SKILLS ============
 
-// Category types for hierarchy (Department -> Project)
-export const categoryTypes = ["department", "project"] as const;
+// Category types for hierarchy (Department -> Area)
+export const categoryTypes = ["department", "area"] as const;
 export type CategoryType = (typeof categoryTypes)[number];
 
 export const skillCategories = pgTable(
@@ -160,8 +160,8 @@ export const skillCategories = pgTable(
     parentId: text("parent_id").references((): any => skillCategories.id, {
       onDelete: "cascade",
     }),
-    path: text("path").notNull().default(""), // e.g., "assembly/project-a" or "" for root
-    depth: integer("depth").notNull().default(0), // 0 = department, 1 = project
+    path: text("path").notNull().default(""), // e.g., "assembly/area-a" or "" for root
+    depth: integer("depth").notNull().default(0), // 0 = department, 1 = area
     type: text("type", { enum: categoryTypes }).notNull().default("department"),
 
     sortOrder: integer("sort_order").notNull().default(0),

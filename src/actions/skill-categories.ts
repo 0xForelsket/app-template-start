@@ -35,7 +35,7 @@ export async function getDepartments(): Promise<SkillCategoryWithHierarchy[]> {
     orderBy: [asc(skillCategories.sortOrder), asc(skillCategories.name)],
     with: {
       children: {
-        where: eq(skillCategories.type, "project"),
+        where: eq(skillCategories.type, "area"),
         orderBy: [asc(skillCategories.sortOrder), asc(skillCategories.name)],
       },
     },
@@ -45,10 +45,10 @@ export async function getDepartments(): Promise<SkillCategoryWithHierarchy[]> {
   const countsResult = await db
     .select({
       departmentId: skillCategories.id,
-      projectCount: sql<number>`(
+      areaCount: sql<number>`(
         SELECT COUNT(*) FROM skill_categories sc
         WHERE sc.parent_id = skill_categories.id
-        AND sc.type = 'project'
+        AND sc.type = 'area'
       )`,
       skillCount: sql<number>`(
         SELECT COUNT(*) FROM skills s
@@ -62,24 +62,24 @@ export async function getDepartments(): Promise<SkillCategoryWithHierarchy[]> {
   const countsMap = new Map(
     countsResult.map((c) => [
       c.departmentId,
-      { projectCount: c.projectCount, skillCount: c.skillCount },
+      { areaCount: c.areaCount, skillCount: c.skillCount },
     ])
   );
 
   return departments.map((dept) => ({
     ...dept,
-    childCount: countsMap.get(dept.id)?.projectCount || 0,
+    childCount: countsMap.get(dept.id)?.areaCount || 0,
     skillCount: countsMap.get(dept.id)?.skillCount || 0,
   }));
 }
 
-// Get projects for a department
-export async function getProjects(
+// Get areas for a department
+export async function getAreas(
   departmentId: string
 ): Promise<SkillCategoryWithHierarchy[]> {
-  const projects = await db.query.skillCategories.findMany({
+  const areas = await db.query.skillCategories.findMany({
     where: and(
-      eq(skillCategories.type, "project"),
+      eq(skillCategories.type, "area"),
       eq(skillCategories.parentId, departmentId)
     ),
     orderBy: [asc(skillCategories.sortOrder), asc(skillCategories.name)],
@@ -88,26 +88,30 @@ export async function getProjects(
     },
   });
 
-  // Get skill counts for each project
+  // Get skill counts for each area (skip if no areas to avoid IN () SQL error)
+  if (areas.length === 0) {
+    return [];
+  }
+
   const countsResult = await db
     .select({
-      projectId: skills.categoryId,
+      areaId: skills.categoryId,
       count: sql<number>`count(*)`,
     })
     .from(skills)
     .where(
       sql`${skills.categoryId} IN (${sql.join(
-        projects.map((p) => sql`${p.id}`),
+        areas.map((a) => sql`${a.id}`),
         sql`, `
       )})`
     )
     .groupBy(skills.categoryId);
 
-  const countsMap = new Map(countsResult.map((c) => [c.projectId, c.count]));
+  const countsMap = new Map(countsResult.map((c) => [c.areaId, c.count]));
 
-  return projects.map((proj) => ({
-    ...proj,
-    skillCount: countsMap.get(proj.id) || 0,
+  return areas.map((area) => ({
+    ...area,
+    skillCount: countsMap.get(area.id) || 0,
   }));
 }
 
@@ -263,7 +267,7 @@ export async function createSkillCategory(
     });
 
     if (parent) {
-      type = "project";
+      type = "area";
       depth = parent.depth + 1;
       path = parent.path ? `${parent.path}/${slug}` : slug;
     }
@@ -443,7 +447,7 @@ export async function getSkillCategoryStats() {
     .select({
       total: sql<number>`count(*)`,
       departments: sql<number>`sum(case when ${skillCategories.type} = 'department' then 1 else 0 end)`,
-      projects: sql<number>`sum(case when ${skillCategories.type} = 'project' then 1 else 0 end)`,
+      areas: sql<number>`sum(case when ${skillCategories.type} = 'area' then 1 else 0 end)`,
       active: sql<number>`sum(case when ${skillCategories.isActive} = true then 1 else 0 end)`,
     })
     .from(skillCategories);
@@ -451,7 +455,7 @@ export async function getSkillCategoryStats() {
   return {
     total: Number(result?.total || 0),
     departments: Number(result?.departments || 0),
-    projects: Number(result?.projects || 0),
+    areas: Number(result?.areas || 0),
     active: Number(result?.active || 0),
   };
 }

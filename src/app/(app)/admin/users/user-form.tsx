@@ -1,9 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import type { Role } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import { Check, Loader2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -14,12 +24,14 @@ type SubmitResult =
 interface UserFormProps {
   mode: "create" | "edit";
   roles: Role[];
+  departments: { id: string; name: string; code: string }[];
   initialData?: {
     id: string;
     employeeId: string;
     name: string;
     email: string | null;
     roleId: string | null;
+    departmentId: string | null;
     isActive: boolean;
   };
   onSubmit: (formData: FormData) => Promise<SubmitResult>;
@@ -28,6 +40,7 @@ interface UserFormProps {
 export function UserForm({
   mode,
   roles,
+  departments,
   initialData,
   onSubmit,
 }: UserFormProps) {
@@ -36,6 +49,9 @@ export function UserForm({
   const [error, setError] = useState<string | null>(null);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(
     initialData?.roleId ?? null
+  );
+  const [selectedDeptId, setSelectedDeptId] = useState<string | null>(
+    initialData?.departmentId ?? null
   );
   const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
 
@@ -48,6 +64,11 @@ export function UserForm({
     formData.set("isActive", isActive.toString());
     if (selectedRoleId) {
       formData.set("roleId", selectedRoleId.toString());
+    }
+    if (selectedDeptId) {
+      formData.set("departmentId", selectedDeptId.toString());
+    } else {
+      formData.set("departmentId", "");
     }
 
     const result = await onSubmit(formData);
@@ -76,14 +97,8 @@ export function UserForm({
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <label
-            htmlFor="employeeId"
-            className="text-[11px] font-black uppercase tracking-widest text-zinc-500"
-          >
-            Employee ID
-          </label>
-          <input
-            type="text"
+          <Label htmlFor="employeeId">Employee ID</Label>
+          <Input
             id="employeeId"
             name="employeeId"
             defaultValue={initialData?.employeeId}
@@ -91,58 +106,64 @@ export function UserForm({
             required
             pattern="^[A-Za-z0-9-]+$"
             placeholder="e.g., TECH-001"
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-bold tracking-wider uppercase placeholder:text-zinc-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 disabled:bg-zinc-100 disabled:cursor-not-allowed"
+            className="uppercase font-bold tracking-wider"
           />
           {mode === "edit" && (
-            <p className="text-[10px] text-zinc-400">
+            <p className="text-[10px] text-muted-foreground font-medium">
               Employee ID cannot be changed
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="name"
-            className="text-[11px] font-black uppercase tracking-widest text-zinc-500"
-          >
-            Full Name
-          </label>
-          <input
-            type="text"
+          <Label htmlFor="name">Full Name</Label>
+          <Input
             id="name"
             name="name"
             defaultValue={initialData?.name}
             required
             placeholder="e.g., John Smith"
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium placeholder:text-zinc-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="email"
-            className="text-[11px] font-black uppercase tracking-widest text-zinc-500"
+          <Label htmlFor="departmentId">Department</Label>
+          <Select
+            value={selectedDeptId || "none"}
+            onValueChange={(val) =>
+              setSelectedDeptId(val === "none" ? null : val)
+            }
           >
-            Email (Optional)
-          </label>
-          <input
+            <SelectTrigger>
+              <SelectValue placeholder="Select Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">No Department</SelectItem>
+              {departments.map((dept) => (
+                <SelectItem key={dept.id} value={dept.id}>
+                  {dept.name} ({dept.code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="email">Email (Optional)</Label>
+          <Input
             type="email"
             id="email"
             name="email"
             defaultValue={initialData?.email ?? ""}
             placeholder="e.g., john@company.com"
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium placeholder:text-zinc-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="pin"
-            className="text-[11px] font-black uppercase tracking-widest text-zinc-500"
-          >
+          <Label htmlFor="pin">
             PIN {mode === "edit" && "(Leave blank to keep current)"}
-          </label>
-          <input
+          </Label>
+          <Input
             type="password"
             id="pin"
             name="pin"
@@ -150,41 +171,29 @@ export function UserForm({
             minLength={4}
             maxLength={20}
             placeholder={mode === "create" ? "Enter 4-20 digit PIN" : "••••"}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium placeholder:text-zinc-300 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10"
           />
         </div>
 
         <div className="space-y-2">
-          <span className="text-[11px] font-black uppercase tracking-widest text-zinc-500">
-            Status
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsActive(!isActive)}
-            className="flex items-center gap-3 w-full rounded-xl border border-zinc-200 bg-white px-4 py-3"
-          >
-            <div
-              className={cn(
-                "flex h-6 w-11 items-center rounded-full p-1 transition-colors",
-                isActive ? "bg-emerald-500" : "bg-zinc-200"
-              )}
+          <Label className="block mb-3">Status</Label>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={isActive}
+              onCheckedChange={setIsActive}
+              id="isActive-switch"
+            />
+            <Label
+              htmlFor="isActive-switch"
+              className="cursor-pointer font-bold"
             >
-              <div
-                className={cn(
-                  "h-4 w-4 rounded-full bg-white shadow-sm transition-transform",
-                  isActive && "translate-x-5"
-                )}
-              />
-            </div>
-            <span className="text-sm font-medium">
-              {isActive ? "Active" : "Inactive"}
-            </span>
-          </button>
+              {isActive ? "ACTIVE" : "INACTIVE"}
+            </Label>
+          </div>
         </div>
       </div>
 
       <fieldset className="space-y-4">
-        <legend className="text-[11px] font-black uppercase tracking-widest text-zinc-500">
+        <legend className="text-[11px] font-black uppercase tracking-widest text-muted-foreground p-0">
           Assign Role
         </legend>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -194,18 +203,18 @@ export function UserForm({
               type="button"
               onClick={() => setSelectedRoleId(role.id)}
               className={cn(
-                "flex items-center gap-3 rounded-xl border p-4 text-left transition-all",
+                "group flex items-center gap-3 rounded-xl border p-4 text-left transition-all active:scale-[0.98]",
                 selectedRoleId === role.id
-                  ? "border-primary-500 bg-primary-50 ring-2 ring-primary-500"
-                  : "border-zinc-200 bg-white hover:border-zinc-300"
+                  ? "border-primary bg-primary/5 ring-2 ring-primary"
+                  : "border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/30"
               )}
             >
               <div
                 className={cn(
                   "flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors",
                   selectedRoleId === role.id
-                    ? "border-primary-500 bg-primary-500 text-white"
-                    : "border-zinc-300"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-muted-foreground/30 group-hover:border-muted-foreground/50"
                 )}
               >
                 {selectedRoleId === role.id && <Check className="h-3 w-3" />}
@@ -215,39 +224,34 @@ export function UserForm({
                   {role.name}
                 </p>
                 {role.description && (
-                  <p className="text-xs text-zinc-500 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {role.description}
                   </p>
                 )}
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  {role.permissions.includes("*")
-                    ? "All permissions"
-                    : `${role.permissions.length} permissions`}
-                </p>
               </div>
             </button>
           ))}
         </div>
         {!selectedRoleId && (
-          <p className="text-xs text-danger-600">Please select a role</p>
+          <p className="text-xs text-danger font-medium">
+            Please select a role
+          </p>
         )}
       </fieldset>
 
-      <div className="flex items-center justify-end gap-3 border-t border-zinc-200 pt-6">
+      <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
         <Button
           type="button"
           variant="ghost"
           onClick={() => router.push("/admin/users")}
-          className="font-bold"
         >
           CANCEL
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || !selectedRoleId}
-          className="bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold shadow-lg shadow-primary-500/25"
+          isLoading={isSubmitting}
         >
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {mode === "create" ? "CREATE USER" : "SAVE CHANGES"}
         </Button>
       </div>

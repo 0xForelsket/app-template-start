@@ -11,13 +11,13 @@ import { notFound } from "next/navigation";
 import { SkillCardsView } from "../../../../skill-cards-view";
 
 interface Props {
-  params: Promise<{ department: string; project: string; skill: string }>;
+  params: Promise<{ department: string; area: string; skill: string }>;
 }
 
 export default async function SkillSubskillsPage({ params }: Props) {
   const {
     department: deptSlug,
-    project: projSlug,
+    area: areaSlug,
     skill: skillCode,
   } = await params;
 
@@ -27,22 +27,18 @@ export default async function SkillSubskillsPage({ params }: Props) {
     notFound();
   }
 
-  const project = await db.query.skillCategories.findFirst({
-    where: eq(skillCategories.slug, projSlug),
+  const area = await db.query.skillCategories.findFirst({
+    where: eq(skillCategories.slug, areaSlug),
     with: { parent: true },
   });
 
-  if (
-    !project ||
-    project.type !== "project" ||
-    project.parentId !== department.id
-  ) {
+  if (!area || area.type !== "area" || area.parentId !== department.id) {
     notFound();
   }
 
   // Get the skill by code
   const skill = await getSkillByCode(skillCode);
-  if (!skill || skill.categoryId !== project.id) {
+  if (!skill || skill.categoryId !== area.id) {
     notFound();
   }
 
@@ -52,8 +48,8 @@ export default async function SkillSubskillsPage({ params }: Props) {
     { label: "Skills", href: "/skills" },
     { label: department.name, href: `/skills/browse/${department.slug}` },
     {
-      label: project.name,
-      href: `/skills/browse/${department.slug}/${project.slug}`,
+      label: area.name,
+      href: `/skills/browse/${department.slug}/${area.slug}`,
     },
     { label: skill.name },
   ];
@@ -65,9 +61,9 @@ export default async function SkillSubskillsPage({ params }: Props) {
       headerActions={
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href={`/skills/browse/${department.slug}/${project.slug}`}>
+            <Link href={`/skills/browse/${department.slug}/${area.slug}`}>
               <ChevronLeft className="h-4 w-4 mr-2" />
-              Back to {project.name}
+              Back to {area.name}
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
@@ -75,7 +71,7 @@ export default async function SkillSubskillsPage({ params }: Props) {
           </Button>
           <Button asChild size="sm">
             <Link
-              href={`/skills/new?categoryId=${project.id}&parentSkillId=${skill.id}`}
+              href={`/skills/new?categoryId=${area.id}&parentSkillId=${skill.id}`}
             >
               <Plus className="h-4 w-4 mr-2" />
               New Sub-Skill

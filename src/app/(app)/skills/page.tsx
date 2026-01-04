@@ -10,8 +10,8 @@ import {
   Award,
   BookOpen,
   Building2,
-  FolderKanban,
   Layers,
+  LayoutGrid,
   Plus,
 } from "lucide-react";
 import Link from "next/link";
@@ -27,13 +27,13 @@ export default async function SkillsPage() {
   return (
     <PageLayout
       title="Skill Catalog"
-      description="Browse and manage skills by department and project"
+      description="Browse and manage skills by department and area"
       headerActions={
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href="/skills/categories">
-              <FolderKanban className="h-4 w-4 mr-2" />
-              Manage Categories
+            <Link href="/skills/categories/new?type=area">
+              <LayoutGrid className="h-4 w-4 mr-2" />
+              New Area
             </Link>
           </Button>
           <Button asChild size="sm">
@@ -54,9 +54,9 @@ export default async function SkillsPage() {
               variant: "default",
             },
             {
-              label: "Projects",
-              value: categoryStats.projects,
-              icon: FolderKanban,
+              label: "Areas",
+              value: categoryStats.areas,
+              icon: LayoutGrid,
               variant: "primary",
             },
             {

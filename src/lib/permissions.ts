@@ -10,11 +10,9 @@ export const PERMISSIONS = {
   USER_UPDATE: "user:update",
   USER_DELETE: "user:delete",
 
-  // Projects (example domain)
-  PROJECT_VIEW: "project:view",
-  PROJECT_CREATE: "project:create",
-  PROJECT_UPDATE: "project:update",
-  PROJECT_DELETE: "project:delete",
+  // Departments
+  DEPARTMENT_VIEW: "department:view",
+  DEPARTMENT_MANAGE: "department:manage",
 
   // System administration
   SYSTEM_SETTINGS: "system:settings",
@@ -25,9 +23,15 @@ export const PERMISSIONS = {
   SKILL_UPDATE: "skill:update",
   SKILL_DELETE: "skill:delete",
 
-  // Skill Categories
+  // Skill Categories (Areas)
   SKILL_CATEGORY_VIEW: "skill_category:view",
   SKILL_CATEGORY_MANAGE: "skill_category:manage",
+
+  // Projects
+  PROJECT_VIEW: "project:view",
+  PROJECT_CREATE: "project:create",
+  PROJECT_UPDATE: "project:update",
+  PROJECT_DELETE: "project:delete",
 
   // Superadmin - grants all permissions
   ALL: "*",
@@ -37,15 +41,13 @@ export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
   employee: [
-    PERMISSIONS.PROJECT_VIEW,
+    PERMISSIONS.DEPARTMENT_VIEW,
     PERMISSIONS.SKILL_VIEW,
     PERMISSIONS.SKILL_CATEGORY_VIEW,
   ],
 
   supervisor: [
-    PERMISSIONS.PROJECT_VIEW,
-    PERMISSIONS.PROJECT_CREATE,
-    PERMISSIONS.PROJECT_UPDATE,
+    PERMISSIONS.DEPARTMENT_VIEW,
     PERMISSIONS.USER_VIEW,
     PERMISSIONS.SKILL_VIEW,
     PERMISSIONS.SKILL_CATEGORY_VIEW,

@@ -12,8 +12,8 @@ import {
   BookOpen,
   Building2,
   ChevronRight,
-  FolderKanban,
   Layers,
+  LayoutGrid,
   Search,
   X,
 } from "lucide-react";
@@ -25,7 +25,7 @@ interface SkillTreeItem {
   id: string;
   name: string;
   code: string;
-  type: "department" | "project" | "skill";
+  type: "department" | "area" | "skill";
   color?: string | null;
   href: string;
   children?: SkillTreeItem[];
@@ -60,14 +60,14 @@ export function SkillSidebarTree({
       color: dept.color,
       href: `/skills/browse/${dept.slug}`,
       hasChildren: (dept.children?.length ?? 0) > 0,
-      children: dept.children?.map((proj) => ({
-        id: proj.id,
-        name: proj.name,
-        code: proj.code,
-        type: "project" as const,
-        color: proj.color || dept.color,
-        href: `/skills/browse/${dept.slug}/${proj.slug}`,
-        hasChildren: (proj.skillCount ?? 0) > 0,
+      children: dept.children?.map((area) => ({
+        id: area.id,
+        name: area.name,
+        code: area.code,
+        type: "area" as const,
+        color: area.color || dept.color,
+        href: `/skills/browse/${dept.slug}/${area.slug}`,
+        hasChildren: (area.skillCount ?? 0) > 0,
         children: [], // Skills loaded on demand
       })),
     }));
@@ -232,8 +232,8 @@ function TreeNode({
     switch (item.type) {
       case "department":
         return Building2;
-      case "project":
-        return FolderKanban;
+      case "area":
+        return LayoutGrid;
       case "skill":
         return BookOpen;
     }

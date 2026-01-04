@@ -58,8 +58,8 @@ export function SkillHierarchyClient({
               Select an Item
             </h3>
             <p className="text-sm text-muted-foreground mt-2 max-w-[300px]">
-              Use the tree on the left to navigate through departments,
-              projects, and skills.
+              Use the tree on the left to navigate through departments, areas,
+              and skills.
             </p>
           </div>
         </div>

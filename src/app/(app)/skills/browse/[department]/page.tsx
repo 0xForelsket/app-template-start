@@ -1,14 +1,15 @@
 import {
+  getAreas,
   getCategoryBreadcrumbs,
-  getProjects,
   getSkillCategoryBySlug,
 } from "@/actions/skill-categories";
+import { getSkillsByCategory } from "@/actions/skills";
+import { DepartmentContentView } from "@/app/(app)/skills/department-content-view";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/ui/page-layout";
 import { ChevronLeft, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SkillCardsView } from "../../skill-cards-view";
 
 interface Props {
   params: Promise<{ department: string }>;
@@ -22,8 +23,10 @@ export default async function DepartmentPage({ params }: Props) {
     notFound();
   }
 
-  const [projects, breadcrumbData] = await Promise.all([
-    getProjects(department.id),
+  // Fetch areas, skills directly in department, and breadcrumbs
+  const [areas, departmentSkills, breadcrumbData] = await Promise.all([
+    getAreas(department.id),
+    getSkillsByCategory(department.id, true), // Skills directly assigned to department
     getCategoryBreadcrumbs(department.id),
   ]);
 
@@ -38,7 +41,9 @@ export default async function DepartmentPage({ params }: Props) {
   return (
     <PageLayout
       title={department.name}
-      description={department.description || `Projects in ${department.name}`}
+      description={
+        department.description || `Skills and areas in ${department.name}`
+      }
       headerActions={
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
@@ -48,21 +53,27 @@ export default async function DepartmentPage({ params }: Props) {
             </Link>
           </Button>
           <Button asChild size="sm">
+            <Link href={`/skills/new?categoryId=${department.id}`}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Skill
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
             <Link
-              href={`/skills/categories/new?parentId=${department.id}&type=project`}
+              href={`/skills/categories/new?parentId=${department.id}&type=area`}
             >
               <Plus className="h-4 w-4 mr-2" />
-              New Project
+              New Area
             </Link>
           </Button>
         </div>
       }
     >
-      <SkillCardsView
+      <DepartmentContentView
         breadcrumbs={breadcrumbs}
-        projects={projects}
-        currentLevel="projects"
-        currentCategory={department}
+        areas={areas}
+        skills={departmentSkills}
+        department={department}
       />
     </PageLayout>
   );

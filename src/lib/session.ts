@@ -35,7 +35,7 @@ function getSecretKey(): Uint8Array {
   if (!secret || secret.length < 32) {
     throw new Error(
       "SESSION_SECRET environment variable must be set and at least 32 characters. " +
-      "Generate one with: openssl rand -base64 32"
+        "Generate one with: openssl rand -base64 32"
     );
   }
   return new TextEncoder().encode(secret);

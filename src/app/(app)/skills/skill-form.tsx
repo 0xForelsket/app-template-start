@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { Skill, SkillCategory } from "@/db/schema";
 import type { ActionResult } from "@/lib/types/actions";
-import { BookOpen, Building2, FolderKanban, Layers } from "lucide-react";
+import { BookOpen, Building2, Layers, LayoutGrid } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -64,17 +64,17 @@ export function SkillForm({
   // Group categories by type
   const groupedCategories = useMemo(() => {
     const departments: CategoryWithParent[] = [];
-    const projects: CategoryWithParent[] = [];
+    const areas: CategoryWithParent[] = [];
 
     for (const cat of categories) {
       if (cat.type === "department") {
         departments.push(cat);
       } else {
-        projects.push(cat);
+        areas.push(cat);
       }
     }
 
-    return { departments, projects };
+    return { departments, areas };
   }, [categories]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -189,12 +189,12 @@ export function SkillForm({
               Hierarchy
             </h3>
 
-            {/* Category (Project) Selection */}
+            {/* Category selection */}
             <div className="space-y-2">
               <Label htmlFor="categoryId">
                 <span className="flex items-center gap-1.5">
-                  <FolderKanban className="h-3.5 w-3.5" />
-                  Project (Category)
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  Area / Department
                 </span>
               </Label>
               <Select
@@ -203,15 +203,15 @@ export function SkillForm({
                 onValueChange={setSelectedCategoryId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select project/category" />
+                  <SelectValue placeholder="Select area/department" />
                 </SelectTrigger>
                 <SelectContent>
-                  {groupedCategories.projects.length > 0 && (
+                  {groupedCategories.areas.length > 0 && (
                     <>
                       <div className="px-2 py-1.5 text-xs font-bold uppercase text-muted-foreground bg-muted/50">
-                        Projects
+                        Areas
                       </div>
-                      {groupedCategories.projects.map((category) => (
+                      {groupedCategories.areas.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           <div className="flex items-center gap-2">
                             <div
@@ -235,7 +235,7 @@ export function SkillForm({
                   {groupedCategories.departments.length > 0 && (
                     <>
                       <div className="px-2 py-1.5 text-xs font-bold uppercase text-muted-foreground bg-muted/50 mt-1">
-                        Departments (Legacy)
+                        Departments
                       </div>
                       {groupedCategories.departments.map((category) => (
                         <SelectItem key={category.id} value={category.id}>

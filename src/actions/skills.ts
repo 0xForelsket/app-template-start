@@ -197,14 +197,14 @@ export async function getSkillBreadcrumbs(skillId: string): Promise<
     id: string;
     name: string;
     code: string;
-    type: "department" | "project" | "skill";
+    type: "department" | "area" | "skill";
   }[]
 > {
   const breadcrumbs: {
     id: string;
     name: string;
     code: string;
-    type: "department" | "project" | "skill";
+    type: "department" | "area" | "skill";
   }[] = [];
 
   const skill = await db.query.skills.findFirst({
@@ -235,7 +235,7 @@ export async function getSkillBreadcrumbs(skillId: string): Promise<
       id: skill.category.id,
       name: skill.category.name,
       code: skill.category.code,
-      type: "project",
+      type: "area",
     });
   }
 

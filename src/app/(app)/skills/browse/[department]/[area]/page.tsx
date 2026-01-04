@@ -14,37 +14,33 @@ import { notFound } from "next/navigation";
 import { SkillCardsView } from "../../../skill-cards-view";
 
 interface Props {
-  params: Promise<{ department: string; project: string }>;
+  params: Promise<{ department: string; area: string }>;
 }
 
-export default async function ProjectPage({ params }: Props) {
-  const { department: deptSlug, project: projSlug } = await params;
+export default async function AreaPage({ params }: Props) {
+  const { department: deptSlug, area: areaSlug } = await params;
 
-  // First get the department to find the project
+  // First get the department to find the area
   const department = await getSkillCategoryBySlug(deptSlug);
   if (!department || department.type !== "department") {
     notFound();
   }
 
-  // Find the project by slug within this department
-  const project = await db.query.skillCategories.findFirst({
-    where: eq(skillCategories.slug, projSlug),
+  // Find the area by slug within this department
+  const area = await db.query.skillCategories.findFirst({
+    where: eq(skillCategories.slug, areaSlug),
     with: {
       parent: true,
     },
   });
 
-  if (
-    !project ||
-    project.type !== "project" ||
-    project.parentId !== department.id
-  ) {
+  if (!area || area.type !== "area" || area.parentId !== department.id) {
     notFound();
   }
 
   const [skills, breadcrumbData] = await Promise.all([
-    getSkillsByCategory(project.id, true),
-    getCategoryBreadcrumbs(project.id),
+    getSkillsByCategory(area.id, true),
+    getCategoryBreadcrumbs(area.id),
   ]);
 
   const breadcrumbs = [
@@ -60,8 +56,8 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <PageLayout
-      title={project.name}
-      description={project.description || `Skills in ${project.name}`}
+      title={area.name}
+      description={area.description || `Skills in ${area.name}`}
       headerActions={
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
@@ -71,7 +67,7 @@ export default async function ProjectPage({ params }: Props) {
             </Link>
           </Button>
           <Button asChild size="sm">
-            <Link href={`/skills/new?categoryId=${project.id}`}>
+            <Link href={`/skills/new?categoryId=${area.id}`}>
               <Plus className="h-4 w-4 mr-2" />
               New Skill
             </Link>
@@ -84,7 +80,7 @@ export default async function ProjectPage({ params }: Props) {
         skills={skills}
         currentLevel="skills"
         currentCategory={{
-          ...project,
+          ...area,
           parent: department,
         }}
       />

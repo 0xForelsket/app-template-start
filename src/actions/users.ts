@@ -114,6 +114,7 @@ export async function createUser(
     pin: formData.get("pin"),
     role: formData.get("role") || "operator",
     roleId: formData.get("roleId"),
+    departmentId: formData.get("departmentId") || undefined,
     isActive: formData.get("isActive") === "true",
   };
 
@@ -161,6 +162,7 @@ export async function createUser(
       email: parsed.data.email || null,
       pin: hashedPin,
       roleId: parsed.data.roleId ?? null,
+      departmentId: parsed.data.departmentId || null,
       isActive: parsed.data.isActive,
     })
     .returning({ id: users.id });
@@ -189,6 +191,7 @@ export async function updateUser(
     email: formData.get("email") || undefined,
     pin: formData.get("pin") || undefined,
     roleId: formData.get("roleId") || undefined,
+    departmentId: formData.get("departmentId") || undefined,
     isActive: formData.has("isActive")
       ? formData.get("isActive") === "true"
       : undefined,
@@ -233,6 +236,9 @@ export async function updateUser(
   }
   if (parsed.data.roleId !== undefined) {
     updateData.roleId = parsed.data.roleId;
+  }
+  if (parsed.data.departmentId !== undefined) {
+    updateData.departmentId = parsed.data.departmentId || null;
   }
   if (parsed.data.isActive !== undefined)
     updateData.isActive = parsed.data.isActive;

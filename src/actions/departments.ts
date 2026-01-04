@@ -101,7 +101,7 @@ export async function getDepartment(id: string) {
 export async function createDepartment(
   formData: FormData
 ): Promise<ActionResult<{ id: string }>> {
-  await requirePermission(PERMISSIONS.SYSTEM_SETTINGS);
+  await requirePermission(PERMISSIONS.DEPARTMENT_MANAGE);
 
   const rawData = {
     name: formData.get("name"),
@@ -156,7 +156,7 @@ export async function updateDepartment(
   id: string,
   formData: FormData
 ): Promise<ActionResult> {
-  await requirePermission(PERMISSIONS.SYSTEM_SETTINGS);
+  await requirePermission(PERMISSIONS.DEPARTMENT_MANAGE);
 
   const department = await db.query.departments.findFirst({
     where: eq(departments.id, id),
@@ -225,7 +225,7 @@ export async function updateDepartment(
 }
 
 export async function deleteDepartment(id: string): Promise<ActionResult> {
-  await requirePermission(PERMISSIONS.SYSTEM_SETTINGS);
+  await requirePermission(PERMISSIONS.DEPARTMENT_MANAGE);
 
   const department = await db.query.departments.findFirst({
     where: eq(departments.id, id),

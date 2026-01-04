@@ -19,8 +19,8 @@ import {
   ChevronDown,
   ChevronRight,
   ExternalLink,
-  FolderKanban,
   Layers,
+  LayoutGrid,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -92,7 +92,7 @@ function DepartmentRow({
           </div>
           <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
             <div className="flex items-center gap-1.5">
-              <FolderKanban className="h-3.5 w-3.5" />
+              <LayoutGrid className="h-3.5 w-3.5" />
               <span>
                 {department.childCount ?? department.children?.length ?? 0}
               </span>
@@ -108,17 +108,17 @@ function DepartmentRow({
         <div className="pl-14 pr-4 pb-4 space-y-2">
           {department.children && department.children.length > 0 ? (
             <Accordion type="multiple" className="space-y-1">
-              {department.children.map((project) => (
-                <ProjectRow
-                  key={project.id}
-                  project={project}
+              {department.children.map((area) => (
+                <AreaRow
+                  key={area.id}
+                  area={area}
                   departmentColor={department.color}
                 />
               ))}
             </Accordion>
           ) : (
             <div className="text-xs text-muted-foreground py-4 text-center bg-muted/30 rounded-lg">
-              No projects in this department
+              No areas in this department
             </div>
           )}
         </div>
@@ -127,11 +127,11 @@ function DepartmentRow({
   );
 }
 
-function ProjectRow({
-  project,
+function AreaRow({
+  area,
   departmentColor,
 }: {
-  project: SkillCategoryWithHierarchy;
+  area: SkillCategoryWithHierarchy;
   departmentColor?: string | null;
 }) {
   const [skills, setSkills] = useState<SkillWithHierarchy[]>([]);
@@ -144,7 +144,7 @@ function ProjectRow({
     try {
       // Dynamically import to avoid circular dependency
       const { getSkillsByCategory } = await import("@/actions/skills");
-      const result = await getSkillsByCategory(project.id, true);
+      const result = await getSkillsByCategory(area.id, true);
       setSkills(result);
       setHasLoaded(true);
     } catch (error) {
@@ -156,7 +156,7 @@ function ProjectRow({
 
   return (
     <AccordionItem
-      value={project.id}
+      value={area.id}
       className="border-border/30 bg-muted/20 rounded-lg overflow-hidden"
     >
       <div onMouseDown={loadSkills}>
@@ -166,25 +166,25 @@ function ProjectRow({
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
               style={{
                 backgroundColor:
-                  project.color || departmentColor || "var(--primary)",
+                  area.color || departmentColor || "var(--primary)",
                 opacity: 0.8,
               }}
             >
-              <FolderKanban className="h-4 w-4 text-white" />
+              <LayoutGrid className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1 text-left min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-foreground truncate">
-                  {project.name}
+                  {area.name}
                 </span>
                 <Badge variant="outline" className="font-mono text-[10px]">
-                  {project.code}
+                  {area.code}
                 </Badge>
               </div>
             </div>
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
               <BookOpen className="h-3.5 w-3.5" />
-              <span>{project.skillCount ?? skills.length}</span>
+              <span>{area.skillCount ?? skills.length}</span>
             </div>
           </div>
         </AccordionTrigger>
@@ -202,13 +202,13 @@ function ProjectRow({
                   key={skill.id}
                   skill={skill}
                   level={0}
-                  projectColor={project.color || departmentColor}
+                  areaColor={area.color || departmentColor}
                 />
               ))}
             </div>
           ) : (
             <div className="text-xs text-muted-foreground py-3 text-center bg-muted/30 rounded-md">
-              No skills in this project
+              No skills in this area
             </div>
           )}
         </div>
@@ -220,11 +220,11 @@ function ProjectRow({
 function SkillRow({
   skill,
   level,
-  projectColor,
+  areaColor,
 }: {
   skill: SkillWithHierarchy;
   level: number;
-  projectColor?: string | null;
+  areaColor?: string | null;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [childSkills, setChildSkills] = useState<SkillWithHierarchy[]>(
@@ -362,7 +362,7 @@ function SkillRow({
               key={child.id}
               skill={child}
               level={level + 1}
-              projectColor={projectColor}
+              areaColor={areaColor}
             />
           ))}
         </motion.div>

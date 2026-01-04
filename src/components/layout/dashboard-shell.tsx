@@ -22,7 +22,6 @@ interface DashboardShellProps {
 
 const getPageTitle = (pathname: string): string => {
   if (pathname === "/dashboard") return "Dashboard";
-  if (pathname.startsWith("/projects")) return "Projects";
   if (pathname.startsWith("/admin/users")) return "User Management";
   if (pathname.startsWith("/admin/roles")) return "Role Management";
   if (pathname.startsWith("/admin/settings")) return "System Settings";

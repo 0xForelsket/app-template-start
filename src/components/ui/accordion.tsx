@@ -130,9 +130,8 @@ export function AccordionContent({
   return (
     <AnimatePresence initial={false}>
       {isActive && (
-        <motion.div
+        <motion.section
           id={contentId}
-          role="region"
           aria-labelledby={triggerId}
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
@@ -144,7 +143,7 @@ export function AccordionContent({
           >
             {children}
           </div>
-        </motion.div>
+        </motion.section>
       )}
     </AnimatePresence>
   );

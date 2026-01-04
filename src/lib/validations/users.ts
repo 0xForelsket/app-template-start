@@ -41,6 +41,7 @@ export const createUserSchema = z.object({
   pin: pinSchema,
   role: userRoleSchema.default("operator"),
   roleId: z.string().min(1, "Role is required").optional(),
+  departmentId: z.string().optional().nullable().or(z.literal("")),
   isActive: z.boolean().default(true),
 });
 
@@ -59,6 +60,7 @@ export const updateUserSchema = z.object({
   pin: pinSchema.optional().or(z.literal("")),
   role: userRoleSchema.optional(),
   roleId: z.string().min(1).optional(),
+  departmentId: z.string().optional().nullable().or(z.literal("")),
   isActive: z.boolean().optional(),
 });
 
