@@ -35,7 +35,7 @@ function getSecretKey(): Uint8Array {
   if (!secret || secret.length < 32) {
     throw new Error(
       "SESSION_SECRET environment variable must be set and at least 32 characters. " +
-        "Generate one with: openssl rand -base64 32"
+      "Generate one with: openssl rand -base64 32"
     );
   }
   return new TextEncoder().encode(secret);
@@ -150,8 +150,10 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const isValid = await isSessionVersionValid(session.user);
 
   if (!isValid) {
-    // Session is invalidated - clear cookies
-    await deleteSession();
+    // Session is invalidated - return null
+    // Note: We don't call deleteSession() here because getCurrentUser() may be
+    // called during Server Component render, where cookies cannot be modified.
+    // The session will be cleaned up on next login or through middleware.
     return null;
   }
 
